@@ -26,3 +26,4 @@ def ideal_daily_photovoltaic_energy_output(
     irradiance = irrad.poa_irradiance_daily(ghi, lat, tilt, day_of_year)
     Eideal = irradiance * capacity_kwp
     return Eideal
+
