@@ -4,6 +4,11 @@ This file contains the functions that calculate solar geometry for daily resolut
 2. The Sunset Hour Angle (Ωs): The angle representing half the day length.
 3. The Geometric Factor (Rb): The ratio of beam radiation on the tilted surface 
    vs. the horizontal surface (integrated over the day).
+
+Assumptions:
+- South-facing surface (azimuth = 180°)
+- Daily-integrated beam radiation
+- No horizon shading
 """
 import math
 
@@ -49,13 +54,15 @@ def geometric_factor_rb(lat, tilt, n):
     """
     Calculates the Geometric Factor (Rb) for a south-facing surface.
     This integrates the incidence angle from sunrise to sunset.
+    Rb is simply the ratio of daily beam irradiance on a tilted 
+    surface to that on a horizontal surface.
 
     Parameters:
         lat (float): Latitude in degrees
         tilt (float): Panel tilt in degrees
         n (int): Day of the year (1-365)
     Returns:
-        float: Rb factor (dimensionless)
+        float: Rb geometric factor (dimensionless)
     """
     # 1. Get derived geometry variables
     delta = declination_angle(n)
