@@ -59,9 +59,7 @@ Global Horizontal Irradiance (GHI) is converted to **plane-of-array (POA) irradi
 
 The ideal energy yield assumes constant panel efficiency:
 
-\[
-E*{ideal} = G*{POA} \times P\_{rated}
-\]
+`E_ideal = G_POA × P_rated`
 
 This serves as a **control model** against which losses are measured.
 
@@ -71,21 +69,18 @@ This serves as a **control model** against which losses are measured.
 
 Cell temperature is estimated using a standard Nominal Operating Cell Temperature-based formulation:
 
-\[
-T*{cell} = T*{ambient} + \frac{NOCT - 20}{800} \times G\_{POA}
-\]
+`T_cell = T_ambient + ((NOCT - 20)/800) × G_POA`
+
 
 Efficiency is adjusted using a linear temperature coefficient:
 
-\[
-\eta(T) = \eta*{ref} \left(1 + \gamma (T*{cell} - 25)\right)
-\]
+`η(T) = η_ref * (1 + γ * (T_cell - 25))`
+
 
 The resulting energy yield is computed as:
 
-\[
-E*{temp} = G*{POA} \times \eta(T)
-\]
+`E_temp = G_POA × η(T)`
+
 
 ---
 
@@ -129,14 +124,16 @@ Temperature Loss: 8.7%
 ## Project Structure
 
 ```text
-pv_yield_sim/
-├── pv/
-│   ├── solar_geometry.py
-│   ├── irradiance.py
-│   ├── temperature.py
-│   └── pv_model.py
+photovoltaics-yield-simulator/
+├── solar_geometry.py
+├── irradiance.py
+├── temperature.py
+├── pv_model.py
+├── notebooks/
+│   └── data_exploration.ipynb
 ├── data/
-│   └── sample_weather.csv
+│   └── weather_london_2023.csv
+│   └── weather_london_2023_cleaned.csv
 ├── cli.py
 ├── plots.py
 └── README.md
