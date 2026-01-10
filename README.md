@@ -14,25 +14,6 @@ The core question this project answers is:
 
 ---
 
-## Motivation
-
-Many introductory photovoltaic models assume constant panel efficiency, which can lead to **systematic overestimation of energy yield**, particularly during warmer months.
-
-This project compares:
-
--   A baseline **ideal PV model** (no losses)
--   A **temperature-adjusted PV model** incorporating cell temperature effects
-
-By isolating temperature losses, the simulator highlights:
-
--   Daily yield differences
--   Seasonal trends
--   Annual energy loss due to temperature alone
-
-The goal is not maximal realism, but **clarity, interpretability, and engineering insight**.
-
----
-
 ## Model Assumptions
 
 To keep the model focused and interpretable, the following assumptions are made:
@@ -47,17 +28,76 @@ These simplifications allow temperature effects to be studied in isolation.
 
 ---
 
+## Motivation
+
+Many introductory photovoltaic models assume constant panel efficiency, which can lead to **systematic overestimation of energy yield**, particularly during warmer months.
+
+This project compares:
+
+-   A baseline **ideal photovoltaic model** (no losses)
+-   A **temperature-adjusted photovoltaic model** incorporating cell temperature effects
+
+By isolating temperature losses, the simulator highlights:
+
+-   Daily yield differences
+-   Seasonal trends
+-   Annual energy loss due to temperature alone
+
+---
+
+## Results
+
+For a fixed-tilt photovoltaic system in London (51.5°N) with a nominal capacity
+of 4 kWp, the simulator produces daily, monthly, and annual energy yield
+estimates under both ideal (25 °C reference) and temperature-adjusted
+conditions.
+
+Using daily meteorological data from NASA POWER for 2023, the model predicts:
+
+-   **Ideal annual energy yield:** 5,278 kWh
+-   **Temperature-adjusted annual energy yield:** 5,060 kWh
+-   **Annual energy reduction due to temperature:** **218 kWh (-4.1%)**
+
+Temperature effects exhibit strong seasonal behaviour. During winter months,
+low ambient temperatures slightly increase photovoltaic efficiency relative to the
+25 °C reference condition. In contrast, summer months experience elevated photovoltaic
+cell temperatures, leading to reduced conversion efficiency and the majority
+of annual energy losses.
+
+Although winter efficiency gains are observed, summer losses dominate on an
+annual basis, resulting in a net reduction in energy yield. These results
+highlight the importance of accounting for thermal effects when estimating
+realistic photovoltaic system performance.
+
+Representative daily and monthly energy profiles are shown in the accompanying
+`temperature_loss_analysis.ipynb` notebook, illustrating the seasonal concentration of temperature losses during
+high-irradiance periods.
+
+![Daily PV Energy Yield Comparison](assets/daily-pv-energy-yield-comparison.png)
+
+![Monthly PV Energy Yield Comparison](assets/monthly-pv-energy-yield-comparison.png)
+
+---
+
 ## Model Formulation
 
 ### 1. Solar Irradiance
 
-Global Horizontal Irradiance (GHI) is converted to **plane-of-array (POA) irradiance** using a simplified transposition model that accounts for panel tilt and orientation.
+Global Horizontal Irradiance (GHI) is converted to **plane-of-array (POA) irradiance** using a simplified transposition model that accounts for panel tilt and orientation:
+
+`G_POA = H_b × R_b + H_d × (1 + cos(β)) / 2`
+
+Where:
+
+-   `H_b` and `H_d` are the beam and diffuse components of GHI
+-   `R_b` is the geometric factor for beam radiation on a tilted surface
+-   `β` is the panel tilt angle
 
 ---
 
 ### 2. Ideal PV Energy Model
 
-The ideal energy yield assumes constant panel efficiency:
+The ideal energy yield assumes constant panel efficiency at reference conditions (25°C):
 
 `E_ideal = G_POA × P_rated`
 
@@ -67,57 +107,19 @@ This serves as a **control model** against which losses are measured.
 
 ### 3. Temperature-Adjusted Model
 
-Cell temperature is estimated using a standard Nominal Operating Cell Temperature-based formulation:
+Cell temperature is estimated using the NOCT (Nominal Operating Cell Temperature) model:
 
-`T_cell = T_ambient + ((NOCT - 20)/800) × G_POA`
+`T_cell = T_air + ((NOCT - 20) / 800) × G_POA`
 
+A temperature correction factor is applied to account for efficiency changes:
 
-Efficiency is adjusted using a linear temperature coefficient:
+`f_T = 1 + γ × (T_cell - 25)`
 
-`η(T) = η_ref * (1 + γ * (T_cell - 25))`
+Where `γ` is the temperature coefficient (typically −0.004 /°C for crystalline silicon).
 
+The temperature-adjusted energy yield is then:
 
-The resulting energy yield is computed as:
-
-`E_temp = G_POA × η(T)`
-
-
----
-
-## Results
-
-The simulator produces:
-
--   Daily energy yield curves (ideal vs temperature-adjusted)
--   Monthly and annual energy totals
--   Percentage energy loss attributable solely to temperature effects
-
-Across a typical year, the temperature-adjusted model predicts an **annual energy reduction of approximately X–Y%**, with losses peaking during summer months.
-
-_(Exact values depend on location and system configuration.)_
-
----
-
-## Usage
-
-### Command Line Interface
-
-```bash
-python cli.py \
-  --lat 51.5 \
-  --lon -0.1 \
-  --tilt 30 \
-  --azimuth 180 \
-  --capacity 4.0
-```
-
-### Example Output
-
-```text
-Annual Yield (Ideal): 4,120 kWh
-Annual Yield (Temp-Adjusted): 3,760 kWh
-Temperature Loss: 8.7%
-```
+`E_temp = E_ideal × f_T`
 
 ---
 
@@ -127,23 +129,16 @@ Temperature Loss: 8.7%
 photovoltaics-yield-simulator/
 ├── solar_geometry.py
 ├── irradiance.py
-├── temperature.py
 ├── pv_model.py
 ├── notebooks/
 │   └── data_exploration.ipynb
+│   └── temperature_loss_analysis.ipynb
 ├── data/
 │   └── weather_london_2023.csv
 │   └── weather_london_2023_cleaned.csv
-├── cli.py
-├── plots.py
+├── assets/
+│   └── daily-pv-energy-yield-comparison.png
+│   └── monthly-pv-energy-yield-comparison.png
+├── requirements.txt
 └── README.md
 ```
-
-## Future Extensions
-
--   Hourly time-step simulation
--   Degradation modelling
--   Battery-coupled systems
--   Validation against real PV system data
--   Modelling of shading and degradation
--   Advanced irradiance transposition model
