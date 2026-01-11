@@ -1,6 +1,6 @@
 # Photovoltaics Yield Simulator
 
-_A physics-inspired photovoltaic energy model_
+_A physics-based photovoltaic energy model_
 
 ## Overview
 
