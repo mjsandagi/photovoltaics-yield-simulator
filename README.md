@@ -146,6 +146,6 @@ photovoltaics-yield-simulator/
 
 ## Conclusion
 
-Under idealised, loss-free conditions using NASA POWER irradiance and an isotropic diffuse model, a 4 kWp fixed-tilt PV system in London would produce approximately 5.1–5.3 MWh/year, with temperature effects reducing yield by about 4% relative to a 25 °C reference. 
+Under idealised, loss-free conditions using NASA POWER irradiance and an isotropic diffuse model, a 4 kWp fixed-tilt PV system in London would produce approximately 5.1–5.3 MWh/year, with temperature effects reducing yield by about 4% relative to a 25 °C reference. While this exceeds typical real-world yields (900 - 1,050 kWh/kWp yr), the relative temperature-induced loss of ~4% remains robust and consistent with literature.
 
 NASA POWER meteorological data were used to ensure global consistency and reproducibility. While POWER has been shown to slightly overestimate surface irradiance in cloudy maritime climates such as the UK, this bias primarily affects absolute energy yield estimates and does not materially alter the relative impact of temperature-related efficiency losses investigated in this study.
